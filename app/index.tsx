@@ -148,7 +148,7 @@ export default function Home() {
             marginBottom: 8,
           }}
         >
-          Bem-Vindo ao Moto Track, um sistema de gestão de motos com AprilTags
+          Bem-Vindo ao Moto Track, um sistema de gestão de motos com UWDTags.
         </Text>
 
         <Text
@@ -159,7 +159,7 @@ export default function Home() {
             marginBottom: 20,
           }}
         >
-          Este sistema visa controlar e mapear motos usando etiquetas AprilTag 36h11.
+          Este sistema visa controlar e mapear motos usando etiquetas UWD.
         </Text>
 
         <Link href="/login" asChild>

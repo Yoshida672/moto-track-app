@@ -18,7 +18,6 @@ export default function CadastroMoto() {
   const slideAnim = useRef(new Animated.Value(-220)).current;
   const router = useRouter();
 
-  const [marca, setMarca] = useState('');
   const [modelo, setModelo] = useState('');
   const [placa, setPlaca] = useState('');
   const [patio, setPatio] = useState('');
@@ -33,7 +32,7 @@ export default function CadastroMoto() {
   }, [menuAberto]);
 
   const handleCadastro = () => {
-    const moto = { marca, modelo, placa, patio, aprilTag };
+    const moto = { modelo, placa, patio, aprilTag };
 
     salvarMoto(moto).then(() => {
       alert('Moto cadastrada com sucesso!');
@@ -124,12 +123,6 @@ export default function CadastroMoto() {
         </Text>
 
         <TextInput
-          value={marca}
-          onChangeText={setMarca}
-          placeholder="Marca"
-          style={estiloInput}
-        />
-        <TextInput
           value={modelo}
           onChangeText={setModelo}
           placeholder="Modelo"
@@ -150,7 +143,7 @@ export default function CadastroMoto() {
         <TextInput
           value={aprilTag}
           onChangeText={setAprilTag}
-          placeholder="AprilTag 36h11"
+          placeholder="UWDTag"
           style={estiloInput}
         />
 
