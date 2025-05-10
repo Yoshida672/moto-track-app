@@ -11,7 +11,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { salvarMoto } from '../utils/storage'; // Importe a função de salvar moto
+import { salvarMoto } from '../utils/storage';
 
 export default function CadastroMoto() {
   const [menuAberto, setMenuAberto] = useState(false);
@@ -35,10 +35,9 @@ export default function CadastroMoto() {
   const handleCadastro = () => {
     const moto = { marca, modelo, placa, patio, aprilTag };
 
-    // Salva a moto no armazenamento
     salvarMoto(moto).then(() => {
       alert('Moto cadastrada com sucesso!');
-      router.push('/listaMotos'); // Navega para a tela de lista de motos
+      router.push('/listaMotos');
     });
   };
 

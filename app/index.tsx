@@ -13,10 +13,9 @@ import { Link, useRouter } from 'expo-router';
 
 export default function Home() {
   const [menuAberto, setMenuAberto] = useState(false);
-  const slideAnim = useRef(new Animated.Value(-220)).current; // largura do menu
+  const slideAnim = useRef(new Animated.Value(-220)).current;
   const router = useRouter();
 
-  // Animação de entrada
   useEffect(() => {
     if (menuAberto) {
       Animated.timing(slideAnim, {

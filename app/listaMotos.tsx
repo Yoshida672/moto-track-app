@@ -110,7 +110,6 @@ export default function ListaMotos() {
 
       {/* Conteúdo */}
       <View style={{ paddingHorizontal: 32, paddingTop: 24 }}>
-        {/* Botão de título centralizado, estilo corrigido */}
         <View style={{ alignItems: 'center', marginBottom: 24 }}>
           <Text
             style={{

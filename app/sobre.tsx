@@ -74,7 +74,7 @@ export default function Sobre() {
           />
         </Pressable>
 
-        <Text style={{ fontWeight: 'bold', fontSize: 16 }}>Sobre Nós</Text>
+        <Text style={{ fontWeight: 'bold', fontSize: 16 }}>SOBRE NÓS</Text>
 
         <Image
           source={require('../assets/iconePerfil.png')}
