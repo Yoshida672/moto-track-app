@@ -57,7 +57,7 @@ export default function Home() {
         </Pressable>
 
 
-        <Text style={{ fontWeight: 'bold', fontSize: 16 }}>MotoTrack</Text>
+        <Text style={{ fontWeight: 'bold', fontSize: 16 }}>MOTOTRACK</Text>
 
         <Image
           source={require('../assets/iconePerfil.png')}

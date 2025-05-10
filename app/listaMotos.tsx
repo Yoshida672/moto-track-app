@@ -56,7 +56,7 @@ export default function ListaMotos() {
           />
         </TouchableOpacity>
 
-        <Text style={{ fontWeight: 'bold', fontSize: 16 }}>Lista de Pátios</Text>
+        <Text style={{ fontWeight: 'bold', fontSize: 16 }}>LISTA DE PÁTIOS</Text>
 
         <Image
           source={require('../assets/iconePerfil.png')}
