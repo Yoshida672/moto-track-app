@@ -1,4 +1,4 @@
-# Moto Track - Sistema de Cadastro e Gestáo de Motos em Pátios 
+# Moto Track - Sistema de Cadastro e Gestão de Motos em Pátios 
 
 ### Aplicativo desenvolvido em React Native com Expo
 
