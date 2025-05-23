@@ -50,6 +50,7 @@ git clone https://github.com/moncaogustavo/moto-track-app.git
 
 ```bash
 npm install
+npm install expo
 ```
 ### 4. Iniciar o Projeto
 
