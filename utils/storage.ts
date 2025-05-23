@@ -25,3 +25,26 @@ export async function buscarMotos(): Promise<Moto[]> {
     return [];
   }
 }
+
+export async function removerMoto(id: string): Promise<void> {
+  try {
+    const json = await AsyncStorage.getItem(STORAGE_KEY);
+    const motos: Moto[] = json ? JSON.parse(json) : [];
+
+    const motosAtualizadas = motos.filter((m) => m.id !== id);
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(motosAtualizadas));
+  } catch (error) {
+    console.error("Erro ao remover a moto:", error);
+  }
+}
+
+export async function excluirMotoStorage(id: string) {
+  try {
+    const json = await AsyncStorage.getItem(STORAGE_KEY);
+    let motos: Moto[] = json ? JSON.parse(json) : [];
+    motos = motos.filter((m) => m.id !== id);
+    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(motos));
+  } catch (error) {
+    console.error('Erro ao excluir a moto:', error);
+  }
+}

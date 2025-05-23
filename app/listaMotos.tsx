@@ -7,9 +7,10 @@ import {
   Dimensions,
   Animated,
   Image,
+  Alert,
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import { buscarMotos } from '../utils/storage';
+import { buscarMotos, excluirMotoStorage } from '../utils/storage';
 import { Moto } from '../types/moto';
 import { useRouter } from 'expo-router';
 
@@ -21,8 +22,27 @@ export default function ListaMotos() {
   const router = useRouter();
 
   useEffect(() => {
-    buscarMotos().then(setMotos);
+    carregarMotos();
   }, []);
+
+  async function carregarMotos() {
+    const lista = await buscarMotos();
+    setMotos(lista);
+  }
+
+  async function excluirMoto(id: string) {
+    Alert.alert('Confirmar', 'Deseja realmente excluir esta moto?', [
+      { text: 'Cancelar', style: 'cancel' },
+      {
+        text: 'Excluir',
+        style: 'destructive',
+        onPress: async () => {
+          await excluirMotoStorage(id);
+          carregarMotos();
+        },
+      },
+    ]);
+  }
 
   useEffect(() => {
     Animated.timing(slideAnim, {
@@ -172,6 +192,34 @@ export default function ListaMotos() {
                 <Text style={{ color: '#222', fontSize: 15 }}>
                   <Text style={{ fontWeight: 'bold' }}>Pátio:</Text> {m.patio}
                 </Text>
+
+                {/* Botões Editar e Excluir */}
+                <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 12 }}>
+                  <TouchableOpacity
+                    onPress={() => router.push({ pathname: '/cadastroMoto', params: { id: m.id } })}
+                    style={{
+                      backgroundColor: '#000000',
+                      paddingVertical: 6,
+                      paddingHorizontal: 12,
+                      borderRadius: 6,
+                      marginRight: 8,
+                    }}
+                  >
+                    <Text style={{ color: '#fff', fontSize: 12, fontWeight: 'bold' }}>Editar</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={() => excluirMoto(m.id)}
+                    style={{
+                      backgroundColor: '#00994d',
+                      paddingVertical: 6,
+                      paddingHorizontal: 12,
+                      borderRadius: 6,
+                    }}
+                  >
+                    <Text style={{ color: '#fff', fontSize: 12, fontWeight: 'bold' }}>Excluir</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             ))}
         </ScrollView>
