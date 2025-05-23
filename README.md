@@ -45,7 +45,6 @@
 
 ```bash
 git clone https://github.com/moncaogustavo/moto-track-app.git
-cd moto-track-app
 ```
 ### 3. Instalar as Dependências
 
