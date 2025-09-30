@@ -43,6 +43,10 @@ useEffect(() => {
   }, [menuAberto]);
 
   const handleCadastro = () => {
+  if (!modelo || !placa || !patio || !uwbtag) {
+    alert('Preencha todos os campos!');
+    return;
+  }
     const moto = { id: Date.now().toString(), modelo, placa, patio, uwbtag };
 
     salvarMoto(moto).then(() => {

@@ -36,7 +36,7 @@ export default function Sobre() {
     },
     {
       nome: 'Gustavo Monção',
-      funcao: 'WebDesigner',
+      funcao: 'Web Designer',
       rm: '557515',
       imagem: require('../assets/gustavo-moncao.jpg'),
       github: 'https://github.com/moncaogustavo',
@@ -44,7 +44,7 @@ export default function Sobre() {
     },
     {
       nome: 'Eric Yoshida',
-      funcao: 'Desenvolvedor Beck-End',
+      funcao: 'Desenvolvedor Back-End',
       rm: '558763',
       imagem: require('../assets/eric.jpg'),
       github: 'https://github.com/Yoshida672',

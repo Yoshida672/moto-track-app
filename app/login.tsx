@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   TextInput,
   View,
@@ -7,19 +7,45 @@ import {
   Image,
   StyleSheet,
   Animated,
+  Alert,
 } from "react-native";
 import { router, Link } from "expo-router";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../services/firebaseConfig";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Login() {
+  const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
 
   const slideAnim = useRef(new Animated.Value(-250)).current;
   const [menuVisible, setMenuVisible] = useState(false);
 
-  function autenticar() {
-    if (senha === "1234") router.push("/cadastroMoto");
-    else alert("Senha inválida!");
-  }
+  const autenticar = () => {
+    if (!email || !senha) {
+      Alert.alert("Atenção", "Preencha todos os campos");
+      return;
+    }
+    signInWithEmailAndPassword(auth, email, senha)
+      .then(async (userCredential) => {
+        const user = userCredential.user;
+        await AsyncStorage.setItem("@user", JSON.stringify(user));
+        router.push("/");
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorCode);
+        console.log(errorMessage);
+        if (error.code === "auth/network-request-failed") {
+          Alert.alert("Error", "Verifique sua conexão");
+        }
+        if (error.code === "auth/invalid-credential") {
+          Alert.alert("Atenção", "Verifique as credenciais");
+        }
+      });
+  };
+  
 
   function toggleMenu() {
     Animated.timing(slideAnim, {
@@ -30,14 +56,24 @@ export default function Login() {
     setMenuVisible(!menuVisible);
   }
 
+  useEffect(() => {
+    const checkUser = async () => {
+      const user = await AsyncStorage.getItem("@user");
+      if (user) {
+        router.push("/");
+      } else {
+        console.log("Error ao verificar login");
+      }
+    };
+    checkUser();
+  }, []);
+
+
   return (
     <View style={styles.container}>
       {/* Menu lateral */}
       <Animated.View style={[styles.sideMenu, { left: slideAnim }]}>
         <Link href="/" asChild><Text style={styles.link}> {'>'} Início</Text></Link>
-        <Link href="/login" asChild><Text style={styles.link}> {'>'} Login</Text></Link>
-        <Link href="/cadastroMoto" asChild><Text style={styles.link}> {'>'} Cadastro</Text></Link>
-        <Link href="/listaMotos" asChild><Text style={styles.link}> {'>'} Lista</Text></Link>
         <Link href="/sobre" asChild><Text style={styles.link}> {'>'} Sobre</Text></Link>
       </Animated.View>
 
@@ -65,6 +101,15 @@ export default function Login() {
       <Image
         source={require("../assets/iconePerfil.png")}
         style={styles.avatar}
+      />
+  
+       {/* Campo de e-mail */}
+      <TextInput
+        style={styles.input}
+        placeholder="E-mail"
+        placeholderTextColor="#666"
+        value={email}
+        onChangeText={setEmail}
       />
 
       {/* Campo de senha */}
