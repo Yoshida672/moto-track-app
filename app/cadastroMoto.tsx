@@ -12,6 +12,9 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { salvarMoto } from '../utils/storage';
+import { Picker } from '@react-native-picker/picker';
+import tags from '../utils/tagMock.json'
+import { UwbResponse } from '~/types/uwb';
 
 export default function CadastroMoto() {
   const [menuAberto, setMenuAberto] = useState(false);
@@ -21,7 +24,15 @@ export default function CadastroMoto() {
   const [modelo, setModelo] = useState('');
   const [placa, setPlaca] = useState('');
   const [patio, setPatio] = useState('');
-  const [aprilTag, setAprilTag] = useState('');
+  const [uwbtag, setuwbtag] = useState('');
+  const [tagsList, setTagsList] = useState<UwbResponse[]>([]);
+
+useEffect(() => {
+  setTagsList(tags.content);
+}, []);
+
+
+
 
   useEffect(() => {
     Animated.timing(slideAnim, {
@@ -32,7 +43,7 @@ export default function CadastroMoto() {
   }, [menuAberto]);
 
   const handleCadastro = () => {
-    const moto = { modelo, placa, patio, aprilTag };
+    const moto = { id: Date.now().toString(), modelo, placa, patio, uwbtag };
 
     salvarMoto(moto).then(() => {
       alert('Moto cadastrada com sucesso!');
@@ -140,12 +151,30 @@ export default function CadastroMoto() {
           placeholder="Pátio"
           style={estiloInput}
         />
-        <TextInput
-          value={aprilTag}
-          onChangeText={setAprilTag}
-          placeholder="UWDTag"
-          style={estiloInput}
-        />
+<Text style={{ marginBottom: 8 }}>Selecione uma UWBTag:</Text>
+<View
+  style={{
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    backgroundColor: '#fff',
+    marginBottom: 12,
+  }}
+>
+<Picker
+  selectedValue={uwbtag}
+  onValueChange={(itemValue) => setuwbtag(itemValue)}
+>
+  <Picker.Item label="Selecione..." value="" />
+  {tagsList.map((tag) => (
+    <Picker.Item
+      key={tag.id}
+      label={`${tag.codigo} (${tag.status})`}
+      value={tag.id.toString()}
+    />
+  ))}
+</Picker>
+</View>
 
         <TouchableOpacity
           style={{

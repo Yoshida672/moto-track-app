@@ -1,7 +1,7 @@
 export type Moto = {
-  id: string;
+  id: string ;
   modelo: string;
   placa: string;
-  apriltag: string;
+  uwbtag: string;
   patio: string;
 };

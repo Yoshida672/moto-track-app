@@ -187,7 +187,7 @@ export default function ListaMotos() {
                   <Text style={{ fontWeight: 'bold' }}>Placa:</Text> {m.placa}
                 </Text>
                 <Text style={{ color: '#222', fontSize: 15 }}>
-                  <Text style={{ fontWeight: 'bold' }}>AprilTag:</Text> {m.aprilTag}
+                  <Text style={{ fontWeight: 'bold' }}>TAG UWB:</Text> {m.uwbtag}
                 </Text>
                 <Text style={{ color: '#222', fontSize: 15 }}>
                   <Text style={{ fontWeight: 'bold' }}>Pátio:</Text> {m.patio}
