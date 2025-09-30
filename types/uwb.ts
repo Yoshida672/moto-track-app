@@ -8,7 +8,7 @@ interface Localizacao {
 export interface UwbResponse {
   id: number;
   codigo: string;
-  status: string;
+  status: boolean;
   moto: string | null;
   localizacao: Localizacao | null;
   link: any;

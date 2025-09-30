@@ -1,25 +1,56 @@
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
-  TextInput,
   View,
   Text,
-  Pressable,
+  TextInput,
   Image,
-  StyleSheet,
+  Pressable,
+  TouchableOpacity,
   Animated,
+  Dimensions,
   Alert,
 } from "react-native";
-import { router, Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../services/firebaseConfig";
+import { auth } from "../src/services/firebaseConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { useTheme } from "~/src/context/ThemeContext";
+import TrocaTema from "~/src/components/TrocaTema";
 
 export default function Login() {
+  const { colors } = useTheme();
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
+  const [menuAberto, setMenuAberto] = useState(false);
+  const slideAnim = useRef(new Animated.Value(-220)).current;
 
-  const slideAnim = useRef(new Animated.Value(-250)).current;
-  const [menuVisible, setMenuVisible] = useState(false);
+  const menuItems = [
+    { label: "Início", href: "/" },
+    { label: "Sobre", href: "/sobre" },
+  ];
+
+  function toggleMenu() {
+    setMenuAberto(!menuAberto);
+  }
+
+  useEffect(() => {
+    Animated.timing(slideAnim, {
+      toValue: menuAberto ? 0 : -220,
+      duration: 250,
+      useNativeDriver: false,
+    }).start();
+  }, [menuAberto]);
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const user = await AsyncStorage.getItem("@user");
+      if (user) {
+        router.push("/");
+      }
+    };
+    checkUser();
+  }, []);
 
   const autenticar = () => {
     if (!email || !senha) {
@@ -33,10 +64,6 @@ export default function Login() {
         router.push("/");
       })
       .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorCode);
-        console.log(errorMessage);
         if (error.code === "auth/network-request-failed") {
           Alert.alert("Error", "Verifique sua conexão");
         }
@@ -45,177 +72,159 @@ export default function Login() {
         }
       });
   };
-  
-
-  function toggleMenu() {
-    Animated.timing(slideAnim, {
-      toValue: menuVisible ? -250 : 0,
-      duration: 300,
-      useNativeDriver: false,
-    }).start();
-    setMenuVisible(!menuVisible);
-  }
-
-  useEffect(() => {
-    const checkUser = async () => {
-      const user = await AsyncStorage.getItem("@user");
-      if (user) {
-        router.push("/");
-      } else {
-        console.log("Error ao verificar login");
-      }
-    };
-    checkUser();
-  }, []);
-
 
   return (
-    <View style={styles.container}>
-      {/* Menu lateral */}
-      <Animated.View style={[styles.sideMenu, { left: slideAnim }]}>
-        <Link href="/" asChild><Text style={styles.link}> {'>'} Início</Text></Link>
-        <Link href="/sobre" asChild><Text style={styles.link}> {'>'} Sobre</Text></Link>
-      </Animated.View>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: colors.background,
+        alignItems: "center",
+        paddingTop: 50,
+      }}
+    >
+      {/* MENU LATERAL */}
+      {menuAberto && (
+        <TouchableOpacity
+          activeOpacity={1}
+          onPress={() => setMenuAberto(false)}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            height: Dimensions.get("window").height,
+            width: "100%",
+            backgroundColor: "rgba(0,0,0,0.2)",
+            flexDirection: "row",
+            zIndex: 10,
+          }}
+        >
+          <Animated.View
+            style={{
+              width: 220,
+              backgroundColor: "#00994d",
+              paddingTop: 60,
+              paddingHorizontal: 20,
+              height: "100%",
+              transform: [{ translateX: slideAnim }],
+            }}
+          >
+            {menuItems.map((item, index) => (
+              <TouchableOpacity
+                key={index}
+                style={{ marginBottom: 20 }}
+                onPress={() => {
+                  setMenuAberto(false);
+                  router.push(item.href);
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 18,
+                    color: colors.buttonText,
+                    fontWeight: "bold",
+                  }}
+                >
+                  {"> " + item.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </Animated.View>
 
-      {/* Cabeçalho com botão de menu */}
-      <View style={styles.header}>
+          <View style={{ flex: 1 }} />
+        </TouchableOpacity>
+      )}
+
+      {/* CABEÇALHO */}
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+          paddingHorizontal: 16,
+          paddingTop: 20,
+          paddingBottom: 12,
+          borderBottomWidth: 1,
+          borderBottomColor: colors.text,
+          width: "100%",
+        }}
+      >
         <Pressable onPress={toggleMenu}>
-          <Image
-            source={require('../assets/menuIcon.png')}
-            style={{ width: 24, height: 24 }}
-          />
+          <Ionicons name="menu" size={32} color={colors.text} />
         </Pressable>
-        <Text style={styles.headerTitle}>LOGIN</Text>
+
+        <Text style={{ fontWeight: "bold", fontSize: 16, color: colors.text }}>
+          LOGIN
+        </Text>
         <View style={{ width: 32 }} />
+        <TrocaTema />
       </View>
 
-      {/* Linha separadora */}
-      <View style={styles.linha} />
-
-      {/* Botão título */}
-      <View style={styles.topButton}>
-        <Text style={styles.topButtonText}>Login de Funcionário</Text>
-      </View>
-
-      {/* Ícone central */}
+      {/* Ícone */}
       <Image
         source={require("../assets/iconePerfil.png")}
-        style={styles.avatar}
+        style={{
+          width: 120,
+          height: 120,
+          borderRadius: 60,
+          marginVertical: 32,
+        }}
       />
-  
-       {/* Campo de e-mail */}
+
+      {/* Inputs */}
       <TextInput
-        style={styles.input}
+        style={{
+          width: "85%",
+          borderWidth: 2,
+          borderColor: colors.text,
+          borderRadius: 30,
+          paddingHorizontal: 20,
+          paddingVertical: 10,
+          fontSize: 16,
+          backgroundColor: colors.background,
+          marginBottom: 24,
+          color: colors.text,
+        }}
         placeholder="E-mail"
-        placeholderTextColor="#666"
+        placeholderTextColor={colors.text}
         value={email}
         onChangeText={setEmail}
       />
 
-      {/* Campo de senha */}
       <TextInput
-        style={styles.input}
+        style={{
+          width: "85%",
+          borderWidth: 2,
+          borderColor: colors.text,
+          borderRadius: 30,
+          paddingHorizontal: 20,
+          paddingVertical: 10,
+          fontSize: 16,
+          backgroundColor: colors.background,
+          marginBottom: 24,
+          color: colors.text,
+        }}
         placeholder="Senha"
-        placeholderTextColor="#666"
+        placeholderTextColor={colors.text}
         secureTextEntry
         value={senha}
         onChangeText={setSenha}
       />
 
       {/* Botão Entrar */}
-      <Pressable style={styles.button} onPress={autenticar}>
-        <Text style={styles.buttonText}>Entrar</Text>
+      <Pressable
+        style={{
+          borderWidth: 1.5,
+          borderColor: colors.buttonBackground,
+          paddingVertical: 10,
+          paddingHorizontal: 32,
+          borderRadius: 25,
+        }}
+        onPress={autenticar}
+      >
+        <Text style={{ color: colors.text, fontWeight: "bold", fontSize: 16 }}>
+          Entrar
+        </Text>
       </Pressable>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#eee",
-    flex: 1,
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingTop: 50,
-  },
-  sideMenu: {
-    position: "absolute",
-    top: 0,
-    bottom: 0,
-    width: 250,
-    backgroundColor: "#00994d",
-    paddingTop: 100,
-    paddingLeft: 20,
-    zIndex: 1000,
-  },
-  link: {
-    color: "#000",
-    fontSize: 18,
-    marginBottom: 20,
-    fontWeight: "bold",
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingTop: 40,
-    paddingBottom: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#aaa",
-    width: "100%",
-  },
-  headerTitle: {
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-  linha: {
-    height: 1,
-    width: "100%",
-    backgroundColor: "#444",
-    marginBottom: 20,
-  },
-  topButton: {
-    borderWidth: 1,
-    borderColor: "#008000",
-    paddingVertical: 8,
-    paddingHorizontal: 20,
-    borderRadius: 25,
-    marginBottom: 24,
-  },
-  topButtonText: {
-    fontWeight: "bold",
-    fontSize: 16,
-    color: "#000",
-  },
-  avatar: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    marginBottom: 32,
-  },
-  input: {
-    width: "90%",
-    borderWidth: 2,
-    borderColor: "#444",
-    borderRadius: 30,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    fontSize: 16,
-    backgroundColor: "#f0f0f0",
-    marginBottom: 24,
-    color: "#000",
-  },
-  button: {
-    borderWidth: 1,
-    borderColor: "#008000",
-    paddingVertical: 10,
-    paddingHorizontal: 32,
-    borderRadius: 25,
-  },
-  buttonText: {
-    fontWeight: "bold",
-    fontSize: 16,
-    color: "#000",
-  },
-});

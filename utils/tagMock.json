@@ -3,7 +3,7 @@
     {
       "id": 1,
       "codigo": "TAG-001",
-      "status": "ATIVA",
+      "status": false,
       "moto": null,
       "localizacao": {
         "id": 10,
@@ -16,7 +16,7 @@
     {
       "id": 2,
       "codigo": "TAG-002",
-      "status": "INATIVA",
+      "status": false,
       "moto": "Moto 45",
       "localizacao": {
         "id": 11,

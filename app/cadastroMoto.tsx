@@ -173,7 +173,7 @@ useEffect(() => {
   {tagsList.map((tag) => (
     <Picker.Item
       key={tag.id}
-      label={`${tag.codigo} (${tag.status})`}
+      label={`${tag.codigo}` + `${tag.status ? "🟢" : "🔴"}`.padStart(60, ' ')}
       value={tag.id.toString()}
     />
   ))}

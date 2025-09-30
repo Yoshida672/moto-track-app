@@ -7,17 +7,21 @@ import {
   TouchableOpacity,
   Animated,
   Dimensions,
-  Modal,
 } from "react-native";
 import { Link, useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useTheme } from "~/src/context/ThemeContext";
+import TrocaTema from "~/src/components/TrocaTema";
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 export default function Home() {
+  const { colors } = useTheme();
   const [menuAberto, setMenuAberto] = useState(false);
   const [logado, setLogado] = useState(false);
   const slideAnim = useRef(new Animated.Value(-220)).current;
   const router = useRouter();
-  const menuItems = logado
+
+const menuItems = logado
     ? [
         { label: "Início", href: "/" },
         { label: "Lista", href: "/listaMotos" },
@@ -29,41 +33,31 @@ export default function Home() {
         { label: "Login", href: "/login" },
         { label: "Sobre", href: "/sobre" },
       ];
+
   const logout = async () => {
     await AsyncStorage.removeItem("@user");
     router.replace("/");
   };
+
   useEffect(() => {
-    if (menuAberto) {
-      Animated.timing(slideAnim, {
-        toValue: 0,
-        duration: 250,
-        useNativeDriver: false,
-      }).start();
-    } else {
-      Animated.timing(slideAnim, {
-        toValue: -220,
-        duration: 250,
-        useNativeDriver: false,
-      }).start();
-    }
+    const toValue = menuAberto ? 0 : -220;
+    Animated.timing(slideAnim, {
+      toValue,
+      duration: 250,
+      useNativeDriver: false,
+    }).start();
   }, [menuAberto]);
 
   useEffect(() => {
     const checkUser = async () => {
       const user = await AsyncStorage.getItem("@user");
-      if (user) {
-        setLogado(true);
-      } else {
-        setLogado(false);
-        console.log("Error ao verificar login");
-      }
+      setLogado(!!user);
     };
     checkUser();
   }, []);
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#e6e6e6" }}>
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
       {/* Cabeçalho */}
       <View
         style={{
@@ -74,32 +68,36 @@ export default function Home() {
           paddingTop: 40,
           paddingBottom: 12,
           borderBottomWidth: 1,
-          borderBottomColor: "#aaa",
+          borderBottomColor: colors.text,
         }}
       >
-        {/* Botão menu */}
         <Pressable onPress={() => setMenuAberto(true)}>
-          <Image
-            source={require("../assets/menuIcon.png")}
-            style={{ width: 24, height: 24 }}
-          />
-        </Pressable>
-        <Pressable onPress={logout} disabled={!logado} style={{ display: logado ? 'flex' : 'none' }}>
-          <Text>Sair</Text>
+          <Ionicons name="menu" size={32} color={colors.text} />
         </Pressable>
 
-        <Text style={{ fontWeight: "bold", fontSize: 16 }}>MOTOTRACK</Text>
+        <Pressable
+          onPress={logout}
+          disabled={!logado}
+          style={{ display: logado ? "flex" : "none" }}
+        >
+          <Text style={{ color: colors.text }}>Sair</Text>
+        </Pressable>
 
+        <Text style={{ fontWeight: "bold", fontSize: 16, color: colors.text }}>
+          MOTOTRACK
+        </Text>
+
+        <TrocaTema />
         <Image
           source={require("../assets/iconePerfil.png")}
           style={{ width: 32, height: 32, borderRadius: 16 }}
         />
       </View>
 
-      {/* Linha separadora abaixo do cabeçalho */}
-      <View style={{ height: 1, backgroundColor: "#444", width: "100%" }} />
+      {/* Linha separadora */}
+      <View style={{ height: 1, backgroundColor: colors.text, width: "100%" }} />
 
-      {/* MENU LATERAL COM ANIMAÇÃO */}
+      {/* Menu lateral */}
       {menuAberto && (
         <TouchableOpacity
           activeOpacity={1}
@@ -135,21 +133,19 @@ export default function Home() {
                 }}
               >
                 <Text
-                  style={{ fontSize: 18, color: "#000", fontWeight: "bold" }}
+                  style={{ fontSize: 18, color: colors.text, fontWeight: "bold" }}
                 >
                   {"> " + item.label}
                 </Text>
               </TouchableOpacity>
             ))}
           </Animated.View>
-
-          {/* Parte clicável para fechar o menu */}
           <View style={{ flex: 1 }} />
         </TouchableOpacity>
       )}
 
       {/* Banner */}
-      <View style={{ width: "100%", height: 240, backgroundColor: "#000" }}>
+      <View style={{ width: "100%", height: 240, backgroundColor: colors.background }}>
         <Image
           source={require("../assets/backgroundMottu.png")}
           style={{
@@ -163,7 +159,7 @@ export default function Home() {
       {/* Conteúdo principal */}
       <View
         style={{
-          backgroundColor: "#e6e6e6",
+          backgroundColor: colors.background,
           padding: 20,
           alignItems: "center",
         }}
@@ -174,6 +170,7 @@ export default function Home() {
             fontWeight: "bold",
             textAlign: "center",
             marginBottom: 8,
+            color: colors.text,
           }}
         >
           Bem-Vindo ao Moto Track, um sistema de gestão de motos com UWDTags.
@@ -182,9 +179,9 @@ export default function Home() {
         <Text
           style={{
             fontSize: 14,
-            color: "#444",
             textAlign: "center",
             marginBottom: 20,
+            color: colors.text,
           }}
         >
           Este sistema visa controlar e mapear motos usando etiquetas UWD.
@@ -201,7 +198,7 @@ export default function Home() {
                 borderRadius: 25,
               }}
             >
-              <Text style={{ color: "#000", fontWeight: "500" }}>
+              <Text style={{ color: colors.text, fontWeight: "500" }}>
                 Cadastrar Moto
               </Text>
             </Pressable>
@@ -217,7 +214,7 @@ export default function Home() {
                 borderRadius: 25,
               }}
             >
-              <Text style={{ color: "#000", fontWeight: "500" }}>
+              <Text style={{ color: colors.text, fontWeight: "500" }}>
                 Acessar como funcionário
               </Text>
             </Pressable>

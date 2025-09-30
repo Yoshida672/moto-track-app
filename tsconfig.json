@@ -27,7 +27,7 @@
   "include": [
     "**/*.ts",
     "**/*.tsx"
-  ],
+, "src/context/ThemeContext.jsx", "src/components/TrocaTema.jsx"  ],
   "exclude": [
     "node_modules"
   ],
