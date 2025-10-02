@@ -8,6 +8,10 @@
 - RM557515 - Gustavo Monção   
 
 ---
+## 📽 Vídeo Explicativo
+
+🔗 [Youtube](https://youtu.be/n1rzMG9ymaQ)
+---
 ## 💡 Proposta e Funcionalidades
 
 O aplicativo tem como objetivo fornecer uma **interface prática e intuitiva** para funcionários monitorarem as motos no pátio via Tag UWB.  
