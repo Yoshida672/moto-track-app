@@ -1,21 +1,18 @@
-# Moto Track - Sistema de Cadastro e Gestão de Motos em Pátios 
-
-### Aplicativo desenvolvido em React Native com Expo
+# 🛵 Ping Mottu
 
 ---
+## 👨‍💻 Integrantes
 
-## Integrantes do Challenge: 
-- **Gustavo Matias** - RM: 555010
-- **Gustavo Monção** - RM: 557515
-- **Eric Yoshida** - RM: 558763
+- RM558763 - Eric Issamu de Lima Yoshida
+- RM555010 - Gustavo Matias Teixeira
+- RM557515 - Gustavo Monção   
 
 ---
+## 💡 Proposta e Funcionalidades
 
-## Descrição do Projeto
+O aplicativo tem como objetivo fornecer uma **interface prática e intuitiva** para funcionários monitorarem as motos no pátio via Tag UWB.  
 
-**Moto Track** é um aplicativo funcional que permite o **cadastro, organização e visualização de motos** localizada em pátios da empresa.
-
-### Funcionalidades: 
+Principais funcionalidades:
 
 - Cadastro de motos com informações como modelo, placa e identificação por UWB Tag;
 - Escolha do pátio onde a moto será alocada;
@@ -23,45 +20,22 @@
 - Autenticação de funcionário;
 - Interface amigável e responsiva;
 
----
-
-## Tecnologias Utilizadas
-
-- [React Native]
-- [Expo]
-- [AsyncStorage]
-- [NativeWind]
-- [Expo Router]
+O foco é **praticidade e agilidade**, garantindo que o funcionário consiga encontrar e gerenciar motos de forma eficiente.
 
 ---
+## 📁 Estrutura de Pastas
 
-## Como Rodar o Projeto Localmente
+Resumo da organização de pastas do projeto:
 
-### 1. Pré-requisitos
 
-- Expo CLI
-
-### 2. Clonar o Repositório
-
-```bash
-git clone https://github.com/moncaogustavo/moto-track-app.git
-```
-### 3. Instalar as Dependências
-
-```bash
-npm install
-npm install expo
-```
-### 4. Iniciar o Projeto
-
-```bash
-npx expo start
-```
-Pode usar a opção para ver na Web (W) ou usar o MobileView
+- app/ - Contém as páginas/telas do aplicativo
+- assets/ - Imagens e ícones utilizados
+- src/
+  - api/ - Chamadas para a API Java e funcionalidades CRUD
+  - components/ - Componentes reutilizáveis dentro das telas
+  - context/ - Contextos, como tema claro/escuro
+  - services/ - Configurações externas, como Firebase
+- types/ - Tipagem dos dados com TypeScript
+- utils/ - Armazenamento e funções auxiliares
 
 ---
-
-## Observações 
-
-O sistema utiliza **UWB Tags** (digitadas manualmente para representar a identificação física das motos)
-Todos os dados são **armanezados localmente** com o **AsyncStorage**
