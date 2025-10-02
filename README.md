@@ -12,6 +12,12 @@
 
 🔗 [Youtube](https://youtu.be/n1rzMG9ymaQ)
 ---
+## 🌐 Pré-requisitos
+
+1. Execute o programa em Java com as informações deste repositório: [Yoshida672/Backend-Java-Mottu](https://github.com/Yoshida672/Backend-Java-Mottu)
+2. Mude as informações no arquivo [api_base.ts](src/api/api_base.ts). Coloque o seu IP na const `base_url`
+
+---
 ## 💡 Proposta e Funcionalidades
 
 O aplicativo tem como objetivo fornecer uma **interface prática e intuitiva** para funcionários monitorarem as motos no pátio via Tag UWB.  
