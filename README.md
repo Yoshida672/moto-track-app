@@ -39,3 +39,6 @@ Resumo da organização de pastas do projeto:
 - utils/ - Armazenamento e funções auxiliares
 
 ---
+
+### LINK DO VIDEO
+(https://youtu.be/n1rzMG9ymaQ)
