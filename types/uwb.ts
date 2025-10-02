@@ -13,11 +13,17 @@ export interface UwbResponse {
   localizacao: Localizacao | null;
   link: any;
 }
-
-interface TagsMock {
-  content: UwbResponse[];
-  totalPages: number;
-  totalElements: number;
-  number: number;
-  size: number;
+export interface PatioResponse {
+  id: number;
+  qtdMoto: number;
+  area: number;
+  capacidadeMax: number;
+  filialId: number;
+  filialNome: string;
 }
+
+export interface CondicaoResponse {
+  id: string;
+  nome: string;
+  cor: string;
+ }

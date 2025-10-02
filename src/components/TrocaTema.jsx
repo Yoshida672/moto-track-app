@@ -4,7 +4,7 @@ import { useTheme } from "../context/ThemeContext";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 export default function TrocaTema() {
-    const { toggleTheme, colors,theme } = useTheme()
+    const { toggleTheme, theme } = useTheme()
     
  
     

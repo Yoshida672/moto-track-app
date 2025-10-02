@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -8,15 +8,18 @@ import {
   Animated,
   Image,
   Alert,
-} from 'react-native';
-import { Picker } from '@react-native-picker/picker';
-import { buscarMotos, excluirMotoStorage } from '../utils/storage';
-import { Moto } from '../types/moto';
-import { useRouter } from 'expo-router';
+} from "react-native";
+import { Picker } from "@react-native-picker/picker";
+import { Moto } from "../types/moto";
+import { useRouter } from "expo-router";
+import { api } from "../src/api/fetch";
+import { api_delete } from "../src/api/delete";
+import { MenuItem,menuItems } from "~/src/components/MenuItems";
+const MENU_ITEMS: MenuItem[] = menuItems;
 
 export default function ListaMotos() {
   const [motos, setMotos] = useState<Moto[]>([]);
-  const [patioSelecionado, setPatioSelecionado] = useState('');
+  const [patioSelecionado, setPatioSelecionado] = useState("");
   const [menuAtivo, setMenuAtivo] = useState(false);
   const slideAnim = useRef(new Animated.Value(-220)).current;
   const router = useRouter();
@@ -25,25 +28,43 @@ export default function ListaMotos() {
     carregarMotos();
   }, []);
 
-  async function carregarMotos() {
-    const lista = await buscarMotos();
-    setMotos(lista);
-  }
+  const carregarMotos = async () => {
+    try {
+      const data = await api.fetchMotos();
+      setMotos(data.content);
+    } catch (error) {
+      console.error("Erro ao carregar motos:", error);
+    }
+  };
 
-  async function excluirMoto(id: string) {
-    Alert.alert('Confirmar', 'Deseja realmente excluir esta moto?', [
-      { text: 'Cancelar', style: 'cancel' },
+  const confirmarExclusao = (id: number) => {
+    Alert.alert("Confirmar", "Deseja realmente excluir esta moto?", [
+      { text: "Cancelar", style: "cancel" },
       {
-        text: 'Excluir',
-        style: 'destructive',
-        onPress: async () => {
-          await excluirMotoStorage(id);
-          carregarMotos();
-        },
+        text: "Excluir",
+        style: "destructive",
+        onPress: () => handleExcluirMoto(id),
       },
     ]);
-  }
+  };
 
+  const handleExcluirMoto = async (id: number) => {
+    const motoRemovida = motos.find((m) => m.id === id);
+    setMotos((prev) => prev.filter((m) => m.id !== id));
+
+    try {
+      console.log("Tentando excluir moto id:", id);
+      await api_delete.deleteMoto(id); 
+      console.log("Excluído com sucesso");
+    } catch (error) {
+      console.error("Erro ao excluir:", error);
+      Alert.alert("Erro", "Não foi possível excluir a moto.");
+      // Re-adiciona a moto caso falhe a exclusão
+      if (motoRemovida) setMotos((prev) => [...prev, motoRemovida]);
+    }
+  };
+
+  // Animação do menu lateral
   useEffect(() => {
     Animated.timing(slideAnim, {
       toValue: menuAtivo ? 0 : -220,
@@ -52,172 +73,193 @@ export default function ListaMotos() {
     }).start();
   }, [menuAtivo]);
 
-  const patios = Array.from(new Set(motos.map((m) => m.patio)));
+  const filiais = Array.from(new Set(motos.map((m) => m.filial))).sort();
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#fff' }}>
+    <View style={{ flex: 1, backgroundColor: "#fff" }}>
       {/* Cabeçalho */}
       <View
         style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
           paddingHorizontal: 16,
           paddingTop: 40,
           paddingBottom: 12,
           borderBottomWidth: 1,
-          borderBottomColor: '#aaa',
+          borderBottomColor: "#aaa",
         }}
       >
         <TouchableOpacity onPress={() => setMenuAtivo(true)}>
           <Image
-            source={require('../assets/menuIcon.png')}
+            source={require("../assets/menuIcon.png")}
             style={{ width: 24, height: 24 }}
           />
         </TouchableOpacity>
 
-        <Text style={{ fontWeight: 'bold', fontSize: 16 }}>LISTA DE PÁTIOS</Text>
+        <Text style={{ fontWeight: "bold", fontSize: 16 }}>Lista de Motos</Text>
 
         <Image
-          source={require('../assets/iconePerfil.png')}
+          source={require("../assets/iconePerfil.png")}
           style={{ width: 32, height: 32, borderRadius: 16 }}
         />
       </View>
 
       {/* Menu Lateral */}
       {menuAtivo && (
-        <TouchableOpacity
-          activeOpacity={1}
-          onPress={() => setMenuAtivo(false)}
+        <View
           style={{
-            position: 'absolute',
+            position: "absolute",
             top: 0,
             left: 0,
-            height: Dimensions.get('window').height,
-            width: '100%',
-            backgroundColor: 'rgba(0,0,0,0.2)',
-            flexDirection: 'row',
+            width: "100%",
+            height: "100%",
             zIndex: 10,
           }}
         >
+          {/* Fundo clicável para fechar */}
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={() => setMenuAtivo(false)}
+            style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.2)" }}
+          />
+
+          {/* Menu animado */}
           <Animated.View
             style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
               width: 220,
-              backgroundColor: '#00994d',
+              height: "100%",
+              backgroundColor: "#00994d",
               paddingTop: 60,
               paddingHorizontal: 20,
-              height: '100%',
               transform: [{ translateX: slideAnim }],
             }}
           >
-            {[{ label: 'Início', href: '/' }, { label: 'Login', href: '/login' }, { label: 'Cadastro de Moto', href: '/cadastroMoto' }, { label: 'Lista', href: '/listaMotos' }, { label: 'Sobre', href: '/sobre' }].map((item, index) => (
+            {MENU_ITEMS.map((item) => (
               <TouchableOpacity
-                key={index}
+                key={item.href}
                 style={{ marginBottom: 20 }}
                 onPress={() => {
                   setMenuAtivo(false);
                   router.push(item.href);
                 }}
               >
-                <Text style={{ fontSize: 18, color:'#000', fontWeight: 'bold' }}>
-                  {'> ' + item.label}
+                <Text
+                  style={{ fontSize: 18, color: "#000", fontWeight: "bold" }}
+                >
+                  {"> " + item.label}
                 </Text>
               </TouchableOpacity>
             ))}
           </Animated.View>
-        </TouchableOpacity>
+        </View>
       )}
 
       {/* Conteúdo */}
       <View style={{ paddingHorizontal: 32, paddingTop: 24 }}>
-        <View style={{ alignItems: 'center', marginBottom: 24 }}>
-          <Text
-            style={{
-              borderWidth: 1,
-              borderColor: '#12a138',
-              borderRadius: 20,
-              paddingVertical: 8,
-              paddingHorizontal: 24,
-              fontWeight: 'bold',
-              color: '#000',
-              textAlign: 'center',
-            }}
-          >
-            Lista de Motos
-          </Text>
-        </View>
-
-        {/* Filtro de Pátio */}
+        {/* Seleção de Filial */}
         <Picker
           selectedValue={patioSelecionado}
-          onValueChange={(itemValue) => setPatioSelecionado(itemValue)}
+          onValueChange={setPatioSelecionado}
           style={{
-            backgroundColor: '#f2f2f2',
+            backgroundColor: "#f2f2f2",
             borderRadius: 10,
             marginBottom: 20,
-            color: '#12a138',
+            color: "#12a138",
           }}
         >
-          <Picker.Item label="Selecione um pátio" value="" />
-          {patios.map((p) => (
-            <Picker.Item key={p} label={p} value={p} />
+          <Picker.Item label="Selecione uma Filial" value="" />
+          {filiais.map((f) => (
+            <Picker.Item key={f} label={f} value={f} />
           ))}
         </Picker>
 
         {/* Lista de Motos */}
         <ScrollView style={{ marginTop: 8, marginBottom: 16 }}>
           {motos
-            .filter((m) => m.patio === patioSelecionado || patioSelecionado === '')
+            .filter(
+              (m) => patioSelecionado === "" || m.filial === patioSelecionado
+            ) // ✅ comparar com filial
             .map((m) => (
               <View
                 key={m.id}
                 style={{
                   borderWidth: 1,
-                  borderColor: '#12a138',
+                  borderColor: "#12a138",
                   padding: 16,
                   borderRadius: 12,
                   marginBottom: 12,
-                  backgroundColor: '#f9f9f9',
+                  backgroundColor: "#f9f9f9",
                 }}
               >
-                <Text style={{ color: '#222', fontSize: 15 }}>
-                  <Text style={{ fontWeight: 'bold' }}>Modelo:</Text> {m.modelo}
+                <Text style={{ color: "#222", fontSize: 15 }}>
+                  <Text style={{ fontWeight: "bold" }}>Modelo:</Text> {m.modelo}
                 </Text>
-                <Text style={{ color: '#222', fontSize: 15 }}>
-                  <Text style={{ fontWeight: 'bold' }}>Placa:</Text> {m.placa}
+                <Text style={{ color: "#222", fontSize: 15 }}>
+                  <Text style={{ fontWeight: "bold" }}>Placa:</Text> {m.placa}
                 </Text>
-                <Text style={{ color: '#222', fontSize: 15 }}>
-                  <Text style={{ fontWeight: 'bold' }}>TAG UWB:</Text> {m.uwbtag}
+                <Text style={{ color: "#222", fontSize: 15 }}>
+                  <Text style={{ fontWeight: "bold" }}>Condição:</Text>{" "}
+                  {m.condicao}
                 </Text>
-                <Text style={{ color: '#222', fontSize: 15 }}>
-                  <Text style={{ fontWeight: 'bold' }}>Pátio:</Text> {m.patio}
+                <Text style={{ color: "#222", fontSize: 15 }}>
+                  <Text style={{ fontWeight: "bold" }}>Filial:</Text> {m.filial}
                 </Text>
 
-                {/* Botões Editar e Excluir */}
-                <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 12 }}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "flex-end",
+                    marginTop: 12,
+                  }}
+                >
                   <TouchableOpacity
-                    onPress={() => router.push({ pathname: '/cadastroMoto', params: { id: m.id } })}
+                    onPress={() =>
+                      router.push({
+                        pathname: "/cadastroMoto",
+                        params: { id: m.id },
+                      })
+                    }
                     style={{
-                      backgroundColor: '#000000',
+                      backgroundColor: "#000",
                       paddingVertical: 6,
                       paddingHorizontal: 12,
                       borderRadius: 6,
                       marginRight: 8,
                     }}
                   >
-                    <Text style={{ color: '#fff', fontSize: 12, fontWeight: 'bold' }}>Editar</Text>
+                    <Text
+                      style={{
+                        color: "#fff",
+                        fontSize: 12,
+                        fontWeight: "bold",
+                      }}
+                    >
+                      Editar
+                    </Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity
-                    onPress={() => excluirMoto(m.id)}
+                    onPress={() => confirmarExclusao(m.id)}
                     style={{
-                      backgroundColor: '#00994d',
+                      backgroundColor: "#00994d",
                       paddingVertical: 6,
                       paddingHorizontal: 12,
                       borderRadius: 6,
                     }}
                   >
-                    <Text style={{ color: '#fff', fontSize: 12, fontWeight: 'bold' }}>Excluir</Text>
+                    <Text
+                      style={{
+                        color: "#fff",
+                        fontSize: 12,
+                        fontWeight: "bold",
+                      }}
+                    >
+                      Excluir
+                    </Text>
                   </TouchableOpacity>
                 </View>
               </View>

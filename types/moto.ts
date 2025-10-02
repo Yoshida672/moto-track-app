@@ -1,7 +1,21 @@
-export type Moto = {
-  id: string ;
-  modelo: string;
+export interface Moto {
+  id: number;
   placa: string;
-  uwbtag: string;
-  patio: string;
-};
+  modelo: string;
+  condicao: string;
+  condicaoId: number;
+  patioId: number;
+  patio: string;       
+  filial: string;
+  uwbtag?: string;     
+  link?: {
+    rel: string;
+    href: string;
+  };
+}
+export interface MotoCreate {
+  placa: string;
+  modelo: string;
+  condicaoId: number;
+  patioId: number;
+}

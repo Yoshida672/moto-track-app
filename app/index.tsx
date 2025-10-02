@@ -14,35 +14,26 @@ import { useTheme } from "~/src/context/ThemeContext";
 import TrocaTema from "~/src/components/TrocaTema";
 import Ionicons from '@expo/vector-icons/Ionicons';
 
+import { menuItems, MenuItem } from "~/src/components/MenuItems";
+// Itens do menu
+const MENU_ITEMS: MenuItem[] = menuItems;
 export default function Home() {
   const { colors } = useTheme();
+  const router = useRouter();
+  const slideAnim = useRef(new Animated.Value(-220)).current;
+
   const [menuAberto, setMenuAberto] = useState(false);
   const [logado, setLogado] = useState(false);
-  const slideAnim = useRef(new Animated.Value(-220)).current;
-  const router = useRouter();
-
-const menuItems = logado
-    ? [
-        { label: "Início", href: "/" },
-        { label: "Lista", href: "/listaMotos" },
-        { label: "Cadastro", href: "/cadastroMoto" },
-        { label: "Sobre", href: "/sobre" },
-      ]
-    : [
-        { label: "Início", href: "/" },
-        { label: "Login", href: "/login" },
-        { label: "Sobre", href: "/sobre" },
-      ];
 
   const logout = async () => {
     await AsyncStorage.removeItem("@user");
+    setLogado(false);
     router.replace("/");
   };
 
   useEffect(() => {
-    const toValue = menuAberto ? 0 : -220;
     Animated.timing(slideAnim, {
-      toValue,
+      toValue: menuAberto ? 0 : -220,
       duration: 250,
       useNativeDriver: false,
     }).start();
@@ -56,9 +47,15 @@ const menuItems = logado
     checkUser();
   }, []);
 
+  const filteredMenuItems = MENU_ITEMS.filter(item => {
+    if (item.onlyLoggedIn && !logado) return false;
+    if (item.onlyLoggedOut && logado) return false;
+    return true;
+  });
+
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
-      {/* Cabeçalho */}
+      
       <View
         style={{
           flexDirection: "row",
@@ -75,11 +72,7 @@ const menuItems = logado
           <Ionicons name="menu" size={32} color={colors.text} />
         </Pressable>
 
-        <Pressable
-          onPress={logout}
-          disabled={!logado}
-          style={{ display: logado ? "flex" : "none" }}
-        >
+        <Pressable onPress={logout} disabled={!logado} style={{ display: logado ? "flex" : "none" }}>
           <Text style={{ color: colors.text }}>Sair</Text>
         </Pressable>
 
@@ -88,16 +81,15 @@ const menuItems = logado
         </Text>
 
         <TrocaTema />
+
         <Image
           source={require("../assets/iconePerfil.png")}
           style={{ width: 32, height: 32, borderRadius: 16 }}
         />
       </View>
 
-      {/* Linha separadora */}
       <View style={{ height: 1, backgroundColor: colors.text, width: "100%" }} />
 
-      {/* Menu lateral */}
       {menuAberto && (
         <TouchableOpacity
           activeOpacity={1}
@@ -123,7 +115,7 @@ const menuItems = logado
               transform: [{ translateX: slideAnim }],
             }}
           >
-            {menuItems.map((item, index) => (
+            {filteredMenuItems.map((item, index) => (
               <TouchableOpacity
                 key={index}
                 style={{ marginBottom: 20 }}
@@ -132,9 +124,7 @@ const menuItems = logado
                   router.push(item.href);
                 }}
               >
-                <Text
-                  style={{ fontSize: 18, color: colors.text, fontWeight: "bold" }}
-                >
+                <Text style={{ fontSize: 18, color: colors.text, fontWeight: "bold" }}>
                   {"> " + item.label}
                 </Text>
               </TouchableOpacity>
@@ -144,7 +134,6 @@ const menuItems = logado
         </TouchableOpacity>
       )}
 
-      {/* Banner */}
       <View style={{ width: "100%", height: 240, backgroundColor: colors.background }}>
         <Image
           source={require("../assets/backgroundMottu.png")}
@@ -156,34 +145,12 @@ const menuItems = logado
         />
       </View>
 
-      {/* Conteúdo principal */}
-      <View
-        style={{
-          backgroundColor: colors.background,
-          padding: 20,
-          alignItems: "center",
-        }}
-      >
-        <Text
-          style={{
-            fontSize: 20,
-            fontWeight: "bold",
-            textAlign: "center",
-            marginBottom: 8,
-            color: colors.text,
-          }}
-        >
+      <View style={{ backgroundColor: colors.background, padding: 20, alignItems: "center" }}>
+        <Text style={{ fontSize: 20, fontWeight: "bold", textAlign: "center", marginBottom: 8, color: colors.text }}>
           Bem-Vindo ao Moto Track, um sistema de gestão de motos com UWDTags.
         </Text>
 
-        <Text
-          style={{
-            fontSize: 14,
-            textAlign: "center",
-            marginBottom: 20,
-            color: colors.text,
-          }}
-        >
+        <Text style={{ fontSize: 14, textAlign: "center", marginBottom: 20, color: colors.text }}>
           Este sistema visa controlar e mapear motos usando etiquetas UWD.
         </Text>
 
@@ -198,9 +165,7 @@ const menuItems = logado
                 borderRadius: 25,
               }}
             >
-              <Text style={{ color: colors.text, fontWeight: "500" }}>
-                Cadastrar Moto
-              </Text>
+              <Text style={{ color: colors.text, fontWeight: "500" }}>Cadastrar Moto</Text>
             </Pressable>
           </Link>
         ) : (
@@ -214,9 +179,7 @@ const menuItems = logado
                 borderRadius: 25,
               }}
             >
-              <Text style={{ color: colors.text, fontWeight: "500" }}>
-                Acessar como funcionário
-              </Text>
+              <Text style={{ color: colors.text, fontWeight: "500" }}>Acessar como funcionário</Text>
             </Pressable>
           </Link>
         )}

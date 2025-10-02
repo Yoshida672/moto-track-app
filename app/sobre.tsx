@@ -207,7 +207,6 @@ export default function Sobre() {
           ))}
         </View>
 
-        {/* Rodapé */}
         <Text style={{ marginTop: 20, fontWeight: "600", fontSize: 12, color: colors.text }}>
           ©2025 Moto Track - Todos os direitos reservados.
         </Text>
