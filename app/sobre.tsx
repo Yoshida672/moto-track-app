@@ -91,7 +91,9 @@ export default function Sobre() {
       </View>
 
       {/* Linha separadora */}
-      <View style={{ height: 1, backgroundColor: colors.text, width: "100%" }} />
+      <View
+        style={{ height: 1, backgroundColor: colors.text, width: "100%" }}
+      />
 
       {/* Menu Lateral */}
       {menuAberto && (
@@ -112,7 +114,7 @@ export default function Sobre() {
           <Animated.View
             style={{
               width: 220,
-              backgroundColor:  "#00994d",
+              backgroundColor: "#00994d",
               paddingTop: 60,
               paddingHorizontal: 20,
               height: "100%",
@@ -131,7 +133,7 @@ export default function Sobre() {
                 <Text
                   style={{
                     fontSize: 18,
-                    color: colors.buttonText,
+                    color: colors.text,
                     fontWeight: "bold",
                   }}
                 >
@@ -175,31 +177,47 @@ export default function Sobre() {
                 style={{
                   marginTop: 8,
                   fontWeight: "bold",
-                  color: "#00994d" ,
+                  color: "#00994d",
                   fontSize: 16,
                 }}
               >
                 {membro.nome}
               </Text>
-              <Text style={{ fontWeight: "bold", fontSize: 14, color: colors.text }}>
+              <Text
+                style={{ fontWeight: "bold", fontSize: 14, color: colors.text }}
+              >
                 {membro.funcao}
               </Text>
-              <Text style={{ fontWeight: "bold", fontSize: 14, color: colors.text }}>
+              <Text
+                style={{ fontWeight: "bold", fontSize: 14, color: colors.text }}
+              >
                 RM: {membro.rm}
               </Text>
 
               {/* Ícones sociais */}
               <View style={{ flexDirection: "row", marginTop: 10, gap: 20 }}>
-                <TouchableOpacity onPress={() => Linking.openURL(membro.github)}>
+                <TouchableOpacity
+                  onPress={() => Linking.openURL(membro.github)}
+                >
                   <Image
                     source={require("../assets/githubIcon.png")}
-                    style={{ width: 32, height: 32, tintColor: colors.buttonBackground }}
+                    style={{
+                      width: 32,
+                      height: 32,
+                      tintColor: colors.buttonBackground,
+                    }}
                   />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => Linking.openURL(membro.linkedin)}>
+                <TouchableOpacity
+                  onPress={() => Linking.openURL(membro.linkedin)}
+                >
                   <Image
                     source={require("../assets/linkedinIcon.png")}
-                    style={{ width: 32, height: 32, tintColor: colors.buttonBackground }}
+                    style={{
+                      width: 32,
+                      height: 32,
+                      tintColor: colors.buttonBackground,
+                    }}
                   />
                 </TouchableOpacity>
               </View>
@@ -207,7 +225,14 @@ export default function Sobre() {
           ))}
         </View>
 
-        <Text style={{ marginTop: 20, fontWeight: "600", fontSize: 12, color: colors.text }}>
+        <Text
+          style={{
+            marginTop: 20,
+            fontWeight: "600",
+            fontSize: 12,
+            color: colors.text,
+          }}
+        >
           ©2025 Moto Track - Todos os direitos reservados.
         </Text>
       </ScrollView>

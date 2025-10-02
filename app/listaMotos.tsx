@@ -14,18 +14,23 @@ import { Moto } from "../types/moto";
 import { useRouter } from "expo-router";
 import { api } from "../src/api/fetch";
 import { api_delete } from "../src/api/delete";
-import { MenuItem,menuItems } from "~/src/components/MenuItems";
+import { MenuItem, menuItems } from "~/src/components/MenuItems";
+import TrocaTema from "~/src/components/TrocaTema";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 const MENU_ITEMS: MenuItem[] = menuItems;
 
 export default function ListaMotos() {
   const [motos, setMotos] = useState<Moto[]>([]);
   const [patioSelecionado, setPatioSelecionado] = useState("");
-  const [menuAtivo, setMenuAtivo] = useState(false);
+  const [menuAberto, setMenuAberto] = useState(false);
+  const [logado, setLogado] = useState(false);
   const slideAnim = useRef(new Animated.Value(-220)).current;
   const router = useRouter();
 
   useEffect(() => {
     carregarMotos();
+    checkUser();
   }, []);
 
   const carregarMotos = async () => {
@@ -35,6 +40,11 @@ export default function ListaMotos() {
     } catch (error) {
       console.error("Erro ao carregar motos:", error);
     }
+  };
+
+  const checkUser = async () => {
+    const user = await AsyncStorage.getItem("@user");
+    setLogado(!!user);
   };
 
   const confirmarExclusao = (id: number) => {
@@ -53,13 +63,9 @@ export default function ListaMotos() {
     setMotos((prev) => prev.filter((m) => m.id !== id));
 
     try {
-      console.log("Tentando excluir moto id:", id);
-      await api_delete.deleteMoto(id); 
-      console.log("Excluído com sucesso");
+      await api_delete.deleteMoto(id);
     } catch (error) {
-      console.error("Erro ao excluir:", error);
       Alert.alert("Erro", "Não foi possível excluir a moto.");
-      // Re-adiciona a moto caso falhe a exclusão
       if (motoRemovida) setMotos((prev) => [...prev, motoRemovida]);
     }
   };
@@ -67,11 +73,18 @@ export default function ListaMotos() {
   // Animação do menu lateral
   useEffect(() => {
     Animated.timing(slideAnim, {
-      toValue: menuAtivo ? 0 : -220,
+      toValue: menuAberto ? 0 : -220,
       duration: 250,
       useNativeDriver: false,
     }).start();
-  }, [menuAtivo]);
+  }, [menuAberto]);
+
+  // Filtra menu por login
+  const filteredMenuItems = MENU_ITEMS.filter((item) => {
+    if (item.onlyLoggedIn && !logado) return false;
+    if (item.onlyLoggedOut && logado) return false;
+    return true;
+  });
 
   const filiais = Array.from(new Set(motos.map((m) => m.filial))).sort();
 
@@ -90,7 +103,7 @@ export default function ListaMotos() {
           borderBottomColor: "#aaa",
         }}
       >
-        <TouchableOpacity onPress={() => setMenuAtivo(true)}>
+        <TouchableOpacity onPress={() => setMenuAberto(true)}>
           <Image
             source={require("../assets/menuIcon.png")}
             style={{ width: 24, height: 24 }}
@@ -99,6 +112,8 @@ export default function ListaMotos() {
 
         <Text style={{ fontWeight: "bold", fontSize: 16 }}>Lista de Motos</Text>
 
+        <TrocaTema />
+
         <Image
           source={require("../assets/iconePerfil.png")}
           style={{ width: 32, height: 32, borderRadius: 16 }}
@@ -106,30 +121,23 @@ export default function ListaMotos() {
       </View>
 
       {/* Menu Lateral */}
-      {menuAtivo && (
-        <View
+      {menuAberto && (
+        <TouchableOpacity
+          activeOpacity={1}
+          onPress={() => setMenuAberto(false)}
           style={{
             position: "absolute",
             top: 0,
             left: 0,
-            width: "100%",
-            height: "100%",
+            width: Dimensions.get("window").width,
+            height: Dimensions.get("window").height,
+            backgroundColor: "rgba(0,0,0,0.2)",
+            flexDirection: "row",
             zIndex: 10,
           }}
         >
-          {/* Fundo clicável para fechar */}
-          <TouchableOpacity
-            activeOpacity={1}
-            onPress={() => setMenuAtivo(false)}
-            style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.2)" }}
-          />
-
-          {/* Menu animado */}
           <Animated.View
             style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
               width: 220,
               height: "100%",
               backgroundColor: "#00994d",
@@ -138,12 +146,12 @@ export default function ListaMotos() {
               transform: [{ translateX: slideAnim }],
             }}
           >
-            {MENU_ITEMS.map((item) => (
+            {filteredMenuItems.map((item) => (
               <TouchableOpacity
                 key={item.href}
                 style={{ marginBottom: 20 }}
                 onPress={() => {
-                  setMenuAtivo(false);
+                  setMenuAberto(false);
                   router.push(item.href);
                 }}
               >
@@ -155,12 +163,12 @@ export default function ListaMotos() {
               </TouchableOpacity>
             ))}
           </Animated.View>
-        </View>
+          <View style={{ flex: 1 }} />
+        </TouchableOpacity>
       )}
 
       {/* Conteúdo */}
       <View style={{ paddingHorizontal: 32, paddingTop: 24 }}>
-        {/* Seleção de Filial */}
         <Picker
           selectedValue={patioSelecionado}
           onValueChange={setPatioSelecionado}
@@ -177,12 +185,11 @@ export default function ListaMotos() {
           ))}
         </Picker>
 
-        {/* Lista de Motos */}
         <ScrollView style={{ marginTop: 8, marginBottom: 16 }}>
           {motos
             .filter(
               (m) => patioSelecionado === "" || m.filial === patioSelecionado
-            ) // ✅ comparar com filial
+            )
             .map((m) => (
               <View
                 key={m.id}

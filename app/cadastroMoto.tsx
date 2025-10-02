@@ -19,6 +19,7 @@ import { PatioResponse, CondicaoResponse } from "~/types/uwb";
 import { useSearchParams } from "expo-router/build/hooks";
 import { api_update } from "~/src/api/update";
 import { api_by_id } from "~/src/api/fetchById";
+import TrocaTema from "~/src/components/TrocaTema";
 
 export default function CadastroMoto() {
   const [menuAberto, setMenuAberto] = useState(false);
@@ -183,6 +184,8 @@ export default function CadastroMoto() {
         <Text style={{ fontWeight: "bold", fontSize: 16 }}>
           Cadastro de Moto
         </Text>
+                <TrocaTema />
+        
         <Image
           source={require("../assets/iconePerfil.png")}
           style={{ width: 32, height: 32, borderRadius: 16 }}
@@ -194,12 +197,14 @@ export default function CadastroMoto() {
           Preencha os dados da moto
         </Text>
 
+        <Text style={{ marginBottom: 8 }}>Placa:</Text>
         <TextInput
-          value={placa}
+          value={placa.toUpperCase()}
           onChangeText={setPlaca}
           placeholder="Placa"
           style={estiloInput}
           editable={!isEditing}
+          
         />
 
         <Text style={{ marginBottom: 8 }}>Selecione um Modelo:</Text>
