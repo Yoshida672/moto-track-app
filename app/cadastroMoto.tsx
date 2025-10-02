@@ -18,6 +18,7 @@ import { Picker } from "@react-native-picker/picker";
 import { PatioResponse, CondicaoResponse } from "~/types/uwb";
 import { useSearchParams } from "expo-router/build/hooks";
 import { api_update } from "~/src/api/update";
+import { api_by_id } from "~/src/api/fetchById";
 
 export default function CadastroMoto() {
   const [menuAberto, setMenuAberto] = useState(false);
@@ -30,8 +31,10 @@ export default function CadastroMoto() {
   const [modelos, setModelos] = useState<string[]>([]);
   const [patios, setPatios] = useState<PatioResponse[]>([]);
   const [condicoes, setCondicoes] = useState<CondicaoResponse[]>([]);
-const searchParams = useSearchParams();
-const id = searchParams.get("id");
+  const searchParams = useSearchParams();
+  const id = searchParams.get("id");
+  const isEditing = Boolean(id);
+
   // Carrega dados da API
   useEffect(() => {
     api.fetchPatios().then((data) => setPatios(data.content));
@@ -48,18 +51,29 @@ const id = searchParams.get("id");
     }).start();
   }, [menuAberto]);
 
+  useEffect(() => {
+  if (isEditing && id) {
+    api_by_id.fetchMotoById(Number(id)).then((moto) => {
+      setModelo(moto.modelo); // só leitura
+      setPlaca(moto.placa);   // só leitura
+      setPatio(moto.patioId.toString());
+      setCondicao(moto.condicaoId.toString());
+    });
+  }
+}, [id]);
   // Função de cadastro
   const handleCadastro = async () => {
     const placaRegex = /^[A-Z]{3}\d[A-Z0-9]\d{2}$|^[A-Z]{3}-\d{4}$/;
-
-    if (!modelo || !placa || !patio || !condicao) {
-      Alert.alert("Atenção", "Preencha todos os campos!");
-      return;
-    }
-
-    if (!placaRegex.test(placa.toUpperCase())) {
-      Alert.alert("Erro", "Placa inválida! Use o formato ABC1D23 ou AAA-1234");
-      return;
+    if (!isEditing) {
+      if (!modelo || !placa || !patio || !condicao) {
+        Alert.alert("Atenção", "Preencha todos os campos!");
+        return;
+      }
+      
+          if (!placaRegex.test(placa.toUpperCase())) {
+            Alert.alert("Erro", "Placa inválida! Use o formato ABC1D23 ou AAA-1234");
+            return;
+          }
     }
 
     try {
@@ -185,11 +199,16 @@ const id = searchParams.get("id");
           onChangeText={setPlaca}
           placeholder="Placa"
           style={estiloInput}
+          editable={!isEditing}
         />
 
         <Text style={{ marginBottom: 8 }}>Selecione um Modelo:</Text>
         <View style={estiloPicker}>
-          <Picker selectedValue={modelo} onValueChange={setModelo}>
+          <Picker
+            selectedValue={modelo}
+            onValueChange={setModelo}
+            enabled={!isEditing}
+          >
             <Picker.Item label="Selecione..." value="" />
             {modelos.map((m) => (
               <Picker.Item key={m} label={m} value={m} />
