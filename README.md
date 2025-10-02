@@ -41,8 +41,3 @@ Resumo da organização de pastas do projeto:
   - services/ - Configurações externas, como Firebase
 - types/ - Tipagem dos dados com TypeScript
 - utils/ - Armazenamento e funções auxiliares
-
----
-
-### LINK DO VIDEO
-(https://youtu.be/n1rzMG9ymaQ)
