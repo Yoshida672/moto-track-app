@@ -58,14 +58,15 @@ export default function FormularioMoto({
         value={placa.toUpperCase()}
         onChangeText={setPlaca}
         placeholder="Placa"
-        style={estiloInput}
+        placeholderTextColor={colors.text}
+        style={[estiloInput, { color: colors.text, backgroundColor: colors.inputBackground }]}
         editable={!isEditing}
       />
 
       <Text style={{ marginBottom: 8, color: colors.text }}>Selecione um Modelo:</Text>
-      <View style={estiloPicker}>
+      <View style={[estiloPicker, { backgroundColor: colors.inputBackground }]}>
         <Picker selectedValue={modelo} onValueChange={setModelo} enabled={!isEditing}>
-          <Picker.Item label="Selecione..." value="" />
+          <Picker.Item label="Selecione..." style={{ color: colors.text, backgroundColor: colors.inputBackground}} value="" />
           {modelos.map((m) => (
             <Picker.Item key={m} label={m} value={m} />
           ))}
@@ -73,9 +74,9 @@ export default function FormularioMoto({
       </View>
 
       <Text style={{ marginBottom: 8, color: colors.text }}>Selecione um Pátio:</Text>
-      <View style={estiloPicker}>
+      <View style={[estiloPicker, { backgroundColor: colors.inputBackground }]}>
         <Picker selectedValue={patio} onValueChange={setPatio}>
-          <Picker.Item label="Selecione..." value="" />
+          <Picker.Item label="Selecione..." style={{ color: colors.text, backgroundColor: colors.inputBackground}} value="" />
           {patios.map((p) => (
             <Picker.Item
               key={p.id}
@@ -87,8 +88,8 @@ export default function FormularioMoto({
       </View>
 
       <Text style={{ marginBottom: 8, color: colors.text }}>Selecione uma Condição:</Text>
-      <View style={estiloPicker}>
-        <Picker selectedValue={condicao} onValueChange={setCondicao}>
+      <View style={[estiloPicker, { backgroundColor: colors.inputBackground }]}>
+        <Picker selectedValue={condicao} style={{ color: colors.text, backgroundColor: colors.inputBackground}} onValueChange={setCondicao}>
           <Picker.Item label="Selecione..." value="" />
           {condicoes.map((c) => (
             <Picker.Item
@@ -109,7 +110,7 @@ const estiloInput = {
   borderRadius: 8,
   padding: 12,
   marginBottom: 12,
-  backgroundColor: "#fff",
+  backgroundColor: "#fff"
 };
 
 const estiloPicker = {

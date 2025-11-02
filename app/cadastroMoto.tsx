@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { View, ScrollView } from "react-native";
+import { View, ScrollView, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { useSearchParams } from "expo-router/build/hooks";
 import { useTheme } from "~/src/context/ThemeContext";
@@ -11,10 +11,9 @@ import { api_create } from "~/src/api/create";
 import { api_by_id } from "~/src/api/fetchById";
 import { api_update } from "~/src/api/update";
 import { PatioResponse, CondicaoResponse } from "~/types/uwb";
-import { MotoCreate } from "~/types/moto";
 import HeaderCadastroMoto from "~/src/components/moto/HeaderCadastroMoto";
 import { menuItems } from "~/types/MenuItems";
-
+import { enviarNotificacao } from "~/src/api/useNotifications";
 export default function CadastroMoto() {
   const { colors } = useTheme();
   const router = useRouter();
@@ -53,23 +52,50 @@ export default function CadastroMoto() {
     }
   }, [id]);
 
-  const handleCadastro = async () => {
-    const placaRegex = /^[A-Z]{3}\d[A-Z0-9]\d{2}$|^[A-Z]{3}-\d{4}$/;
-    if (!isEditing && (!modelo || !placa || !patio || !condicao)) return;
-    if (!isEditing && !placaRegex.test(placa.toUpperCase())) return;
+const handleCadastro = async () => {
+  const placaRegex = /^[A-Z]{3}\d[A-Z0-9]\d{2}$|^[A-Z]{3}-\d{4}$/;
+  if (!isEditing) {
+    if (!modelo || !placa || !patio || !condicao) {
+      Alert.alert("Atenção", "Preencha todos os campos!");
+      return;
+    }
+    
+    if (!placaRegex.test(placa.toUpperCase())) {
+      Alert.alert("Erro", "Placa inválida! Use o formato ABC1D23 ou AAA-1234");
+      return;
+    }
+  }
 
-    const motoData: MotoCreate = {
+  try {
+    const motoData = {
+      placa,
       modelo,
-      placa: placa.toUpperCase(),
-      patioId: Number(patio),
       condicaoId: Number(condicao),
+      patioId: Number(patio),
     };
 
-    if (id) await api_update.updateMoto(Number(id), motoData);
-    else await api_create.createMoto(motoData);
+    if (id) {
+      await api_update.updateMoto(Number(id), motoData);
+      Alert.alert("Sucesso", "Moto atualizada com sucesso!");
+    } else {
+      const response = await api_create.createMoto(motoData);
+      Alert.alert(
+        "Sucesso",
+        `Moto cadastrada com sucesso! ID: ${response.id}`
+      );
+
+      enviarNotificacao(
+        "Nova moto cadastrada",
+        `Modelo: ${modelo}, Placa: ${placa}`
+      );
+    }
 
     router.push("/listaMotos");
-  };
+  } catch (err) {
+    console.error(err);
+    Alert.alert("Erro", "Não foi possível salvar a moto.");
+  }
+};
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>

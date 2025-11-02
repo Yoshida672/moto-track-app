@@ -12,6 +12,7 @@ import HeaderLogin from "~/src/components/login/HeaderLogin";
 import FormLogin from "~/src/components/login/FormLogin";
 import BotaoAnimado from "~/src/components/BotaoAnimado";
 import { menuItems } from "~/types/MenuItems";
+import { enviarNotificacao } from "~/src/api/useNotifications";
 
 export default function Login() {
   const { colors } = useTheme();
@@ -36,6 +37,7 @@ const itensMenu = menuItems.filter((item) => item.onlyLoggedOut || !item.onlyLog
       const user = userCredential.user;
       await AsyncStorage.setItem("@user", JSON.stringify(user));
       Alert.alert("Sucesso", "Você conseguiu logar com sucesso");
+      enviarNotificacao("Login realizado", "Bem-vindo de volta!");
       router.push("/");
     } catch (error: any) {
       if (error.code === "auth/network-request-failed")

@@ -12,7 +12,6 @@ import { MenuItem, menuItems } from "~/types/MenuItems";
 
 import BotaoAnimado from "~/src/components/BotaoAnimado";
 import HeaderListaMoto from "~/src/components/moto/HeaderListaMoto";
-import MenuListaMoto from "~/src/components/moto/MenuListaMoto";
 import { Picker } from "@react-native-picker/picker";
 import MenuLateral from "~/src/components/MenuLateral";
 

@@ -12,6 +12,7 @@ import HeaderRegister from "~/src/components/register/HeaderRegister";
 import FormRegister from "~/src/components/register/FormRegister";
 import BotaoAnimado from "~/src/components/BotaoAnimado";
 import { menuItems } from "~/types/MenuItems";
+import { enviarNotificacao } from "~/src/api/useNotifications";
 
 export default function Register() {
   const { colors } = useTheme();
@@ -41,6 +42,7 @@ const itensMenu = menuItems.filter((item) => item.onlyLoggedOut || !item.onlyLog
       const user = userCredential.user;
       await AsyncStorage.setItem("@user", JSON.stringify(user));
       Alert.alert("Sucesso", "Conta criada com sucesso");
+      enviarNotificacao("Registro realizado", "Bem-vindo ao Ping-Mottu!");
       router.push("/");
     } catch (error: any) {
       Alert.alert("Erro", "Algo deu errado");

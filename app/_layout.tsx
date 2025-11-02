@@ -2,8 +2,11 @@ import { Stack } from "expo-router";
 import "../global.css";
 import { ThemeProvider } from "~/src/context/ThemeContext";
 import { AuthProvider } from "~/src/context/AuthContext";
+import { useNotifications } from "~/src/api/useNotifications";
 
 export default function Layout() {
+  useNotifications(); // inicializa notificações
+
   return (
     <AuthProvider>
       <ThemeProvider>

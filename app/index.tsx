@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import { View } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTheme } from "~/src/context/ThemeContext";
@@ -6,6 +6,7 @@ import HeaderHome from "~/src/components/Index/HeaderHome";
 import MenuLateral from "~/src/components/MenuLateral";
 import ConteudoHome from "~/src/components/Index/ConteudoHome";
 import { menuItems, MenuItem } from "~/types/MenuItems";
+import { solicitarPermissaoNotificacoes } from "~/src/api/useNotifications";
 
 export default function Home() {
   const { colors } = useTheme();
@@ -23,6 +24,9 @@ export default function Home() {
       setLogado(!!user);
     };
     checkUser();
+  }, []);
+  useEffect(() => {
+    solicitarPermissaoNotificacoes();
   }, []);
 
   const filteredMenuItems: MenuItem[] = menuItems.filter((item) => {
