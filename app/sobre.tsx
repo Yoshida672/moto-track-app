@@ -1,37 +1,32 @@
-import React, { useState, useRef, useEffect } from "react";
-import {
-  View,
-  Text,
-  Image,
-  Pressable,
-  TouchableOpacity,
-  Animated,
-  Dimensions,
-  Linking,
-  ScrollView,
-} from "react-native";
-import { useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
+import { View, ScrollView, Text } from "react-native";
 import { useTheme } from "~/src/context/ThemeContext";
-import TrocaTema from "~/src/components/TrocaTema";
-import Ionicons from "@expo/vector-icons/Ionicons";
+import { MenuItem, menuItems } from "~/types/MenuItems";
+import { useRouter } from "expo-router";
 
+import MenuLateral from "~/src/components/MenuLateral";
+import HeaderSobre from "~/src/components/sobre/HeaderSobre";
+import MembroCard from "~/src/components/sobre/MembroCard";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 export default function Sobre() {
   const { colors } = useTheme();
   const [menuAberto, setMenuAberto] = useState(false);
-  const slideAnim = useRef(new Animated.Value(-220)).current;
-  const router = useRouter();
-  const menu = [
-    { label: "Início", href: "/" },
-    { label: "Login", href: "/login" },
-    { label: "Sobre", href: "/sobre" },
-  ];
+  const [logado, setLogado] = useState(false);
+  
+
+  const filteredMenuItems: MenuItem[] = menuItems.filter((item) => {
+    if (item.onlyLoggedIn && !logado) return false;
+    if (item.onlyLoggedOut && logado) return false;
+    return true;
+  });
+
   useEffect(() => {
-    Animated.timing(slideAnim, {
-      toValue: menuAberto ? 0 : -220,
-      duration: 250,
-      useNativeDriver: false,
-    }).start();
-  }, [menuAberto]);
+    const checkUser = async () => {
+      const user = await AsyncStorage.getItem("@user");
+      setLogado(!!user);
+    };
+    checkUser();
+  }, []);
 
   const membros = [
     {
@@ -63,91 +58,13 @@ export default function Sobre() {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
-      {/* Cabeçalho */}
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-          paddingHorizontal: 16,
-          paddingTop: 40,
-          paddingBottom: 12,
-          borderBottomWidth: 1,
-          borderBottomColor: colors.text,
-        }}
-      >
-        <Pressable onPress={() => setMenuAberto(true)}>
-          <Ionicons name="menu" size={32} color={colors.text} />
-        </Pressable>
-
-        <Text style={{ fontWeight: "bold", fontSize: 16, color: colors.text }}>
-          SOBRE NÓS
-        </Text>
-        <TrocaTema />
-        <Image
-          source={require("../assets/iconePerfil.png")}
-          style={{ width: 32, height: 32, borderRadius: 16 }}
-        />
-      </View>
-
-      {/* Linha separadora */}
-      <View
-        style={{ height: 1, backgroundColor: colors.text, width: "100%" }}
+      <HeaderSobre onMenu={() => setMenuAberto(true)} />
+      <MenuLateral
+        aberto={menuAberto}
+        itens={filteredMenuItems}
+        fecharMenu={() => setMenuAberto(false)}
       />
 
-      {/* Menu Lateral */}
-      {menuAberto && (
-        <TouchableOpacity
-          activeOpacity={1}
-          onPress={() => setMenuAberto(false)}
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            height: Dimensions.get("window").height,
-            width: "100%",
-            backgroundColor: "rgba(0,0,0,0.2)",
-            flexDirection: "row",
-            zIndex: 10,
-          }}
-        >
-          <Animated.View
-            style={{
-              width: 220,
-              backgroundColor: "#00994d",
-              paddingTop: 60,
-              paddingHorizontal: 20,
-              height: "100%",
-              transform: [{ translateX: slideAnim }],
-            }}
-          >
-            {menu.map((item, index) => (
-              <TouchableOpacity
-                key={index}
-                style={{ marginBottom: 20 }}
-                onPress={() => {
-                  setMenuAberto(false);
-                  router.push(item.href);
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 18,
-                    color: colors.text,
-                    fontWeight: "bold",
-                  }}
-                >
-                  {"> " + item.label}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </Animated.View>
-
-          <View style={{ flex: 1 }} />
-        </TouchableOpacity>
-      )}
-
-      {/* Conteúdo principal */}
       <ScrollView
         contentContainerStyle={{ alignItems: "center", paddingVertical: 20 }}
       >
@@ -160,68 +77,7 @@ export default function Sobre() {
           }}
         >
           {membros.map((membro, index) => (
-            <View
-              key={index}
-              style={{
-                alignItems: "center",
-                marginHorizontal: 10,
-                marginVertical: 20,
-                width: 180,
-              }}
-            >
-              <Image
-                source={membro.imagem}
-                style={{ width: 120, height: 120, borderRadius: 60 }}
-              />
-              <Text
-                style={{
-                  marginTop: 8,
-                  fontWeight: "bold",
-                  color: "#00994d",
-                  fontSize: 16,
-                }}
-              >
-                {membro.nome}
-              </Text>
-              <Text
-                style={{ fontWeight: "bold", fontSize: 14, color: colors.text }}
-              >
-                {membro.funcao}
-              </Text>
-              <Text
-                style={{ fontWeight: "bold", fontSize: 14, color: colors.text }}
-              >
-                RM: {membro.rm}
-              </Text>
-
-              {/* Ícones sociais */}
-              <View style={{ flexDirection: "row", marginTop: 10, gap: 20 }}>
-                <TouchableOpacity
-                  onPress={() => Linking.openURL(membro.github)}
-                >
-                  <Image
-                    source={require("../assets/githubIcon.png")}
-                    style={{
-                      width: 32,
-                      height: 32,
-                      tintColor: colors.buttonBackground,
-                    }}
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => Linking.openURL(membro.linkedin)}
-                >
-                  <Image
-                    source={require("../assets/linkedinIcon.png")}
-                    style={{
-                      width: 32,
-                      height: 32,
-                      tintColor: colors.buttonBackground,
-                    }}
-                  />
-                </TouchableOpacity>
-              </View>
-            </View>
+            <MembroCard key={index} membro={membro} index={index} />
           ))}
         </View>
 

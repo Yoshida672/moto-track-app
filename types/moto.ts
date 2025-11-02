@@ -13,6 +13,7 @@ export interface Moto {
     href: string;
   };
 }
+
 export interface MotoCreate {
   placa: string;
   modelo: string;
