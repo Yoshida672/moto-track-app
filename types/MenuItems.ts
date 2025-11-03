@@ -11,5 +11,6 @@ export const menuItems: MenuItem[] = [
   { label: "Lista", href: "/listaMotos", onlyLoggedIn: true },
   { label: "Cadastro", href: "/cadastroMoto", onlyLoggedIn: true },
   { label: "Sobre", href: "/sobre" },
+  { label: "Sobre App", href: "/sobreApp" },
   { label: "Login", href: "/login", onlyLoggedOut: true },
 ];

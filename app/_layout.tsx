@@ -17,6 +17,7 @@ export default function Layout() {
           <Stack.Screen name="register" options={{ headerShown: false }} />
           <Stack.Screen name="login" options={{ headerShown: false }} />
           <Stack.Screen name="sobre" options={{ headerShown: false }} />
+          <Stack.Screen name="sobreApp" options={{ headerShown: false }} />
         </Stack>
       </ThemeProvider>
     </AuthProvider>

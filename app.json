@@ -27,13 +27,11 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [
-      "expo-router",
-      "expo-web-browser"
-    ],
+    "plugins": ["expo-router", "expo-web-browser"],
     "extra": {
-      "googleAndroidClientId":"928773065471-r1ipcgigj608stj64ls7og5d65pkl2av.apps.googleusercontent.com",
-      "googleWebClientId":"928773065471-98afq426rb4dj3fs4ppopm2u86teoht8.apps.googleusercontent.com",
+      "commitHash": "65340f75afd4c3bfe0749f18aacc262ffa6408fd",
+      "googleAndroidClientId": "928773065471-r1ipcgigj608stj64ls7og5d65pkl2av.apps.googleusercontent.com",
+      "googleWebClientId": "928773065471-98afq426rb4dj3fs4ppopm2u86teoht8.apps.googleusercontent.com",
       "eas": {
         "projectId": "9de1abd7-ca6c-471d-a99c-21547eabf644"
       }
