@@ -30,6 +30,14 @@ export default function Sobre() {
 
   const membros = [
     {
+      nome: "Eric Yoshida",
+      funcao: "Desenvolvedor Back-End",
+      rm: "558763",
+      imagem: require("../assets/eric.jpg"),
+      github: "https://github.com/Yoshida672",
+      linkedin: "https://www.linkedin.com/in/yoshida672/",
+    },
+    {
       nome: "Gustavo Matias",
       funcao: "Engenheiro de Dados",
       rm: "555010",
@@ -46,14 +54,7 @@ export default function Sobre() {
       github: "https://github.com/moncaogustavo",
       linkedin: "https://www.linkedin.com/in/gustavo-monção-574a38224/",
     },
-    {
-      nome: "Eric Yoshida",
-      funcao: "Desenvolvedor Back-End",
-      rm: "558763",
-      imagem: require("../assets/eric.jpg"),
-      github: "https://github.com/Yoshida672",
-      linkedin: "https://www.linkedin.com/in/yoshida672/",
-    },
+    
   ];
 
   return (
