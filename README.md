@@ -10,7 +10,7 @@
 ---
 ## 📽 Vídeo Explicativo
 
-🔗 [Youtube]([https://youtu.be/n1rzMG9ymaQ](https://youtu.be/gEp4Ollk544))
+🔗 [Youtube](https://youtu.be/gEp4Ollk544)
 ---
 ## 🌐 Pré-requisitos
 
