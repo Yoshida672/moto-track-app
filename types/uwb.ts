@@ -23,7 +23,7 @@ export interface PatioResponse {
 }
 
 export interface CondicaoResponse {
-  id: string;
+  id: number;
   nome: string;
   cor: string;
- }
+}

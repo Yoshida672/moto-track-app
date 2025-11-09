@@ -1,22 +1,19 @@
-import { View, Image, Pressable, Text } from "react-native";
-import { MotiView, MotiText } from "moti";
+import React from "react";
+import { View, Text, Image, Pressable } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import TrocaTema from "~/src/components/TrocaTema";
 import { useTheme } from "~/src/context/ThemeContext";
+import TrocaTema from "../TrocaTema";
 
 interface HeaderProps {
-  title: string;
+  titulo: string;
   onMenuPress: () => void;
 }
 
-export default function HeaderListaMoto({ title, onMenuPress }: HeaderProps) {
+export default function HeaderCadastro({ titulo, onMenuPress }: HeaderProps) {
   const { colors } = useTheme();
 
   return (
-    <MotiView
-      from={{ opacity: 0, translateY: -50 }}
-      animate={{ opacity: 1, translateY: 0 }}
-      transition={{ type: "timing", duration: 400 }}
+    <View
       style={{
         flexDirection: "row",
         justifyContent: "space-between",
@@ -26,27 +23,20 @@ export default function HeaderListaMoto({ title, onMenuPress }: HeaderProps) {
         paddingBottom: 12,
         borderBottomWidth: 1,
         borderBottomColor: "#aaa",
-        zIndex: 2,
+        zIndex: 1,
       }}
     >
       <Pressable onPress={onMenuPress}>
         <Ionicons name="menu" size={32} color={colors.text} />
       </Pressable>
-
-      <MotiText
-        from={{ scale: 0.85 }}
-        animate={{ scale: 1 }}
-        transition={{ type: "timing", duration: 300 }}
-        style={{ fontWeight: "bold", fontSize: 16, color: colors.text }}
-      >
-        {title}
-      </MotiText>
-
+      <Text style={{ fontWeight: "bold", fontSize: 16, color: colors.text }}>
+        {titulo}
+      </Text>
       <TrocaTema />
       <Image
         source={require("assets/iconePerfil.png")}
         style={{ width: 32, height: 32, borderRadius: 16 }}
       />
-    </MotiView>
+    </View>
   );
 }

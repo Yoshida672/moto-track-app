@@ -1,13 +1,14 @@
 export interface Moto {
   id: number;
   placa: string;
+  dono: string;
   modelo: string;
   condicao: string;
   condicaoId: number;
   patioId: number;
-  patio: string;       
+  patio: string;
   filial: string;
-  uwbtag?: string;     
+  uwbtag?: string;
   link?: {
     rel: string;
     href: string;
@@ -19,4 +20,11 @@ export interface MotoCreate {
   modelo: string;
   condicaoId: number;
   patioId: number;
+  dono: string;
+}
+
+export interface Condicao {
+  id?: number;
+  nome: string;
+  cor: string;
 }

@@ -5,13 +5,13 @@ import { useSearchParams } from "expo-router/build/hooks";
 import { useTheme } from "~/src/context/ThemeContext";
 import MenuLateral from "~/src/components/MenuLateral";
 import FormularioMoto from "~/src/components/moto/FormularioMoto";
-import BotaoCadastroMoto from "~/src/components/moto/BotaoCadastroMoto";
+import BotaoCadastro from "~/src/components/BotaoCadastro";
 import { api } from "~/src/api/fetch";
 import { api_create } from "~/src/api/create";
 import { api_by_id } from "~/src/api/fetchById";
 import { api_update } from "~/src/api/update";
 import { PatioResponse, CondicaoResponse } from "~/types/uwb";
-import HeaderCadastroMoto from "~/src/components/moto/HeaderCadastroMoto";
+import HeaderCadastro from "~/src/components/moto/HeaderCadastro";
 import { menuItems } from "~/types/MenuItems";
 import { enviarNotificacao } from "~/src/api/useNotifications";
 export default function CadastroMoto() {
@@ -28,6 +28,7 @@ export default function CadastroMoto() {
 
   const [modelo, setModelo] = useState("");
   const [placa, setPlaca] = useState("");
+  const [dono, setDono] = useState("");
   const [patio, setPatio] = useState("");
   const [condicao, setCondicao] = useState("");
 
@@ -46,56 +47,61 @@ export default function CadastroMoto() {
       api_by_id.fetchMotoById(Number(id)).then((moto) => {
         setModelo(moto.modelo);
         setPlaca(moto.placa);
+        setDono(moto.dono);
         setPatio(moto.patioId.toString());
         setCondicao(moto.condicaoId.toString());
       });
     }
   }, [id]);
 
-const handleCadastro = async () => {
-  const placaRegex = /^[A-Z]{3}\d[A-Z0-9]\d{2}$|^[A-Z]{3}-\d{4}$/;
-  if (!isEditing) {
-    if (!modelo || !placa || !patio || !condicao) {
-      Alert.alert("Atenção", "Preencha todos os campos!");
-      return;
-    }
-    
-    if (!placaRegex.test(placa.toUpperCase())) {
-      Alert.alert("Erro", "Placa inválida! Use o formato ABC1D23 ou AAA-1234");
-      return;
-    }
-  }
+  const handleCadastro = async () => {
+    const placaRegex = /^[A-Z]{3}\d[A-Z0-9]\d{2}$|^[A-Z]{3}-\d{4}$/;
+    if (!isEditing) {
+      if (!modelo || !dono || !placa || !patio || !condicao) {
+        Alert.alert("Atenção", "Preencha todos os campos!");
+        return;
+      }
 
-  try {
-    const motoData = {
-      placa,
-      modelo,
-      condicaoId: Number(condicao),
-      patioId: Number(patio),
-    };
-
-    if (id) {
-      await api_update.updateMoto(Number(id), motoData);
-      Alert.alert("Sucesso", "Moto atualizada com sucesso!");
-    } else {
-      const response = await api_create.createMoto(motoData);
-      Alert.alert(
-        "Sucesso",
-        `Moto cadastrada com sucesso! ID: ${response.id}`
-      );
-
-      enviarNotificacao(
-        "Nova moto cadastrada",
-        `Modelo: ${modelo}, Placa: ${placa}`
-      );
+      if (!placaRegex.test(placa.toUpperCase())) {
+        Alert.alert(
+          "Erro",
+          "Placa inválida! Use o formato ABC1D23 ou AAA-1234"
+        );
+        return;
+      }
     }
 
-    router.push("/listaMotos");
-  } catch (err) {
-    console.error(err);
-    Alert.alert("Erro", "Não foi possível salvar a moto.");
-  }
-};
+    try {
+      const motoData = {
+        placa,
+        dono,
+        modelo,
+        condicaoId: Number(condicao),
+        patioId: Number(patio),
+      };
+
+      if (id) {
+        await api_update.updateMoto(Number(id), motoData);
+        Alert.alert("Sucesso", "Moto atualizada com sucesso!");
+      } else {
+        const response = await api_create.createMoto(motoData);
+        Alert.alert(
+          "Sucesso",
+          `Moto cadastrada com sucesso! ID: ${response.id}`
+        );
+
+        enviarNotificacao(
+          "Nova moto cadastrada",
+          `Modelo: ${modelo}, Placa: ${placa}`
+        );
+      }
+
+      router.push("/listaMotos");
+    } catch (err) {
+      console.error(err);
+      Alert.alert("Erro", "Não foi possível salvar a moto.");
+    }
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
@@ -105,7 +111,7 @@ const handleCadastro = async () => {
         fecharMenu={() => setMenuAberto(false)}
       />
 
-      <HeaderCadastroMoto
+      <HeaderCadastro
         titulo="Cadastro de Moto"
         onMenuPress={() => setMenuAberto(true)}
       />
@@ -114,6 +120,8 @@ const handleCadastro = async () => {
         <FormularioMoto
           placa={placa}
           setPlaca={setPlaca}
+          dono={dono}
+          setDono={setDono}
           modelo={modelo}
           setModelo={setModelo}
           patio={patio}
@@ -125,7 +133,12 @@ const handleCadastro = async () => {
           condicoes={condicoes}
           isEditing={isEditing}
         />
-        <BotaoCadastroMoto onPress={handleCadastro} isEditing={isEditing} />
+        <BotaoCadastro
+          onPress={handleCadastro}
+          isEditing={isEditing}
+          label="Cadastrar Moto"
+          labelEdit="Atualizar Moto"
+        />
       </ScrollView>
     </View>
   );
