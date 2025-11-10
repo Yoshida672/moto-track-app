@@ -29,7 +29,7 @@
     },
     "plugins": ["expo-router", "expo-web-browser"],
     "extra": {
-      "commitHash": "65340f75afd4c3bfe0749f18aacc262ffa6408fd",
+      "commitHash": "6c2c6bc41cfe55a0f728d06396f0f87d2603342c",
       "googleAndroidClientId": "928773065471-r1ipcgigj608stj64ls7og5d65pkl2av.apps.googleusercontent.com",
       "googleWebClientId": "928773065471-98afq426rb4dj3fs4ppopm2u86teoht8.apps.googleusercontent.com",
       "eas": {
