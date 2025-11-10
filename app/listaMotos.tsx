@@ -22,6 +22,7 @@ import { CondicaoResponse, UwbResponse } from "~/types/uwb";
 import BotaoAnimado from "~/src/components/BotaoAnimado";
 import HeaderLista from "~/src/components/moto/HeaderLista";
 import MenuLateral from "~/src/components/MenuLateral";
+import { api_update } from "~/src/api/update";
 
 export default function ListaMotos() {
   const { colors } = useTheme();
@@ -52,6 +53,7 @@ export default function ListaMotos() {
       console.error("Erro ao carregar localizações:", error);
     }
   };
+
   const carregarCondicoes = async () => {
     try {
       const data = await api.fetchCondicoes();
@@ -60,6 +62,7 @@ export default function ListaMotos() {
       console.error("Erro ao carregar condições:", error);
     }
   };
+
   const checkUser = async () => {
     const user = await AsyncStorage.getItem("@user");
     setLogado(!!user);
@@ -81,7 +84,9 @@ export default function ListaMotos() {
   const filiais = Array.from(new Set(motos.map((m) => m.filial))).sort();
 
   const getLocalizacaoMoto = (placa: string) =>
-    localizacoes.find((l) => l.moto === placa);
+    localizacoes.find(
+      (l) => l.moto?.trim().toLowerCase() === placa.trim().toLowerCase()
+    );
 
   const getCorCondicao = (condicaoMoto: string) => {
     if (!condicaoMoto) return "#95a5a6";
@@ -233,12 +238,6 @@ export default function ListaMotos() {
             .map((m) => {
               const uwb = getLocalizacaoMoto(m.placa);
               const corCondicao = getCorCondicao(m.condicao);
-              console.log(
-                "➡️ Condição:",
-                m.condicao,
-                "| Cor aplicada:",
-                corCondicao
-              );
 
               return (
                 <MotiView
@@ -275,10 +274,39 @@ export default function ListaMotos() {
                     <Text style={styles.label}>Filial: </Text>
                     {m.filial}
                   </Text>
-                  <Text style={[styles.texto, { color: colors.text }]}>
-                    <Text style={styles.label}>Tag UWB: </Text>
-                    {uwb ? uwb.codigo : "Não vinculada"}
-                  </Text>
+
+                  {uwb ? (
+                    <View>
+                      <Text style={[styles.texto, { color: colors.text }]}>
+                        <Text style={styles.label}>Tag UWB: </Text>
+                        {uwb.codigo} {"\n"}
+                        <Text style={styles.label}>Localização: </Text>
+                        {uwb.localizacao
+                          ? `X: ${uwb.localizacao.xCoord.toFixed(
+                              2
+                            )} | Y: ${uwb.localizacao.yCoord.toFixed(2)}`
+                          : "Sem dados de posição"}
+                      </Text>
+                    </View>
+                  ) : (
+                    <TouchableOpacity
+                      onPress={() =>
+                        router.push({
+                          pathname: "/vincularTag",
+                          params: { id: m.id, placa: m.placa },
+                        })
+                      }
+                    >
+                      <Text
+                        style={[
+                          styles.texto,
+                          { color: colors.primary || "#3498db" },
+                        ]}
+                      >
+                        Vincular tag
+                      </Text>
+                    </TouchableOpacity>
+                  )}
 
                   <View style={styles.acoes}>
                     <BotaoAnimado

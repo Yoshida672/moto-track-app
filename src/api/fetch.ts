@@ -51,7 +51,6 @@ async function fetchtags() {
   try {
     const response = await fetch(`${API_BASE_URL}tags`);
     const data = await response.json();
-    console.log("Tags recebidas:", data);
     return data.content || [];
   } catch (error) {
     console.error("Erro ao buscar tags:", error);
